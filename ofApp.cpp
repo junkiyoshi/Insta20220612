@@ -7,6 +7,8 @@ void ofApp::setup() {
 	ofSetWindowTitle("openframeworks");
 
 	ofBackground(0);
+	ofSetLineWidth(1.5);
+	ofEnableDepthTest();
 }
 
 //--------------------------------------------------------------
@@ -18,10 +20,11 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
 
-	ofTranslate(ofGetWindowSize() * 0.5);
+	this->cam.begin();
 
 	ofColor color;
 	float len = 5;
+	bool flag = true;
 
 	for (int x = -220; x <= 220; x += 220) {
 
@@ -29,15 +32,26 @@ void ofApp::draw() {
 
 			ofPushMatrix();
 			ofTranslate(x, y);
+			if (flag) {
+			
+				ofRotateY(ofGetFrameNum());
+			}
+			else {
+
+				ofRotateX(ofGetFrameNum());
+			}
 
 			int hue = ofRandom(255);
+			for (float radius = 15; radius <= 100; radius += len * 2) {
 
-			for (float radius = 15; radius <= 100; radius += 10) {
+				ofRotateZ(ofRandom(360));
+				ofRotateY(ofRandom(360));
+				ofRotateX(ofRandom(360));
 
 				vector<glm::vec2> vertices_1, vertices_2;
-				float deg_start = ofRandom(360) + ofGetFrameNum() * ofRandom(1, 10);
+				float deg_start = ofRandom(360) + ofGetFrameNum() * ofRandom(3, 10);
 
-				for (float deg = deg_start; deg < deg_start + 180; deg += 1) {
+				for (float deg = deg_start; deg < deg_start + 270; deg += 1) {
 
 					vertices_1.push_back(glm::vec2((radius - len * 0.5) * cos(deg * DEG_TO_RAD), (radius - len * 0.5) * sin(deg * DEG_TO_RAD)));
 					vertices_2.push_back(glm::vec2((radius + len * 0.5) * cos(deg * DEG_TO_RAD), (radius + len * 0.5) * sin(deg * DEG_TO_RAD)));
@@ -47,21 +61,13 @@ void ofApp::draw() {
 
 				color.setHsb(hue, 150, 255);
 
-				ofFill();
-				ofSetColor(color, 150);
-
-				ofBeginShape();
-				ofVertices(vertices_1);
-				ofVertices(vertices_2);
-				ofEndShape();
-
 				ofNoFill();
 				ofSetColor(color);
 
 				ofBeginShape();
 				ofVertices(vertices_1);
 				ofVertices(vertices_2);
-				ofEndShape();
+				ofEndShape(true);
 
 				hue = (hue + (int)ofRandom(20, 120)) % 255;
 			}
@@ -69,6 +75,8 @@ void ofApp::draw() {
 			ofPopMatrix();
 		}
 	}
+
+	this->cam.end();
 }
 
 //--------------------------------------------------------------
